@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>International Foods Survey</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .bar {
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+    .animate-slide-up {
+      transform: translateY(50px);
+      opacity: 0;
+      animation: slideUp 1s forwards;
+    }
+    .animate-slide-left {
+      transform: translateX(-50px);
+      opacity: 0;
+      animation: slideLeft 1s forwards;
+    }
+    @keyframes slideUp {
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes slideLeft {
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="bg-gray-800 text-white font-sans">
+  <div class="max-w-6xl mx-auto p-6 grid lg:grid-cols-2 gap-6">
+    
+    <!-- Left: Form -->
+    <div class="space-y-4">
+      <h1 class="text-2xl font-bold mb-4">🍽️ Add Food</h1>
+      <div>
+        <label>Food name</label>
+        <input id="foodName" type="text" class="w-full p-2 rounded bg-gray-700 border border-gray-600" placeholder="Pizza, Sushi, Plov">
+      </div>
+      <div>
+        <label>Number of students (max 24)</label>
+        <input id="foodCount" type="number" max="24" min="1" class="w-full p-2 rounded bg-gray-700 border border-gray-600" placeholder="e.g. 7">
+      </div>
+      <div>
+        <label>Students' names (comma separated)</label>
+        <input id="studentNames" type="text" class="w-full p-2 rounded bg-gray-700 border border-gray-600" placeholder="John, Mary, Alex...">
+      </div>
+      <div>
+        <label>Food image URL (optional)</label>
+        <input id="foodImage" type="url" class="w-full p-2 rounded bg-gray-700 border border-gray-600" placeholder="https://...">
+      </div>
+      <!-- Form oxiriga tugma qo'sh -->
+<div>
+  <button onclick="addFood()" 
+          class="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded text-white">
+    ➕ Add Food
+  </button>
+</div>
+
+    </div>
+
+    <!-- Right: Diagram -->
+    <div>
+      <h2 class="text-xl font-bold mb-4">Class Food Chart</h2>
+      <div id="chart" class="space-y-4">
+        <!-- bars injected -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom: Images -->
+  <div class="max-w-6xl mx-auto p-6">
+    <h2 class="text-xl font-bold mb-4">Added Foods Gallery</h2>
+    <div id="images" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <!-- images injected -->
+    </div>
+  </div>
+
+  <!-- Fullscreen Food Sections -->
+  <div class="w-full">
+    <!-- Taco Section -->
+    <section class="h-screen bg-cover bg-center flex items-center justify-center text-white relative"
+             style="background-image: url('https://www.thecookingtwins.com/wp-content/uploads/2025/09/authentic-mexican-ground-beef-taco-recipe-featured.webp');">
+      <div class="bg-black bg-opacity-50 p-8 rounded text-center animate-slide-up">
+        <h2 class="text-4xl font-bold mb-4">🌮 Mexican Taco</h2>
+        <p class="max-w-xl mx-auto">A taco is a Mexican food made with a tortilla filled with meat, beans, cheese, or vegetables. It is tasty, easy to eat, and shows Mexico’s rich culture.</p>
+      </div>
+    </section>
+
+    <!-- Sushi Section -->
+    <section class="h-screen bg-cover bg-center flex items-center justify-center text-white relative"
+             style="background-image: url('https://www.kikkoman.eu/fileadmin/user_upload/kikkoman.eu/Food-News/EU_make-your-own-sushi/sushi-kakkoii.jpeg');">
+      <div class="bg-black bg-opacity-50 p-8 rounded text-center animate-slide-left">
+        <h2 class="text-4xl font-bold mb-4">🍣 Japanese Sushi</h2>
+        <p class="max-w-xl mx-auto">Sushi is a Japanese dish with rice and seafood or vegetables. It is fresh, healthy, and loved worldwide.</p>
+      </div>
+    </section>
+
+    <!-- Pizza Section -->
+    <section class="h-screen bg-cover bg-center flex items-center justify-center text-white relative"
+             style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Supreme_pizza.jpg');">
+      <div class="bg-black bg-opacity-50 p-8 rounded text-center animate-slide-up">
+        <h2 class="text-4xl font-bold mb-4">🍕 Italian Pizza</h2>
+        <p class="max-w-xl mx-auto">Pizza is an Italian food with dough, tomato, and cheese. It is baked and loved everywhere.</p>
+      </div>
+    </section>
+
+    <!-- Plov Section -->
+    <section class="h-screen bg-cover bg-center flex items-center justify-center text-white relative"
+             style="background-image: url('https://www.shutterstock.com/image-photo/delicious-fergana-pilaf-uzbek-favorite-260nw-2027053073.jpg');">
+      <div class="bg-black bg-opacity-50 p-8 rounded text-center animate-slide-left">
+        <h2 class="text-4xl font-bold mb-4">🍛 Uzbek Plov</h2>
+        <p class="max-w-xl mx-auto">Plov is rice with meat and carrots. It is the national food of Uzbekistan.</p>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const chart = document.getElementById('chart');
+    const images = document.getElementById('images');
+    const MAX = 24;
+
+    function randomColor() {
+      const colors = [
+        '#f43f5e', // rose
+        '#22c55e', // green
+        '#f59e0b', // amber
+        '#a855f7', // violet
+        '#e11d48', // red
+        '#14b8a6', // teal
+        '#84cc16', // lime
+        '#fb923c'  // orange
+      ];
+      return colors[Math.floor(Math.random()*colors.length)];
+    }
+
+    function addFood() {
+      const name = document.getElementById('foodName').value.trim();
+      const count = parseInt(document.getElementById('foodCount').value);
+      const students = document.getElementById('studentNames').value.split(',').map(s => s.trim()).filter(Boolean);
+      const imageUrl = document.getElementById('foodImage').value.trim();
+
+      if (!name || !count || count > MAX) {
+        alert("Please enter valid food and count (1–24).");
+        return;
+      }
+
+      const row = document.createElement('div');
+      row.className = 'flex items-center gap-3';
+
+      const label = document.createElement('div');
+      label.className = 'w-28 text-sm';
+      label.textContent = `${name} (${count})`;
+
+      const barWrap = document.createElement('div');
+      barWrap.className = 'flex-1 h-8 bg-gray-600 rounded overflow-hidden';
+
+      const bar = document.createElement('div');
+      bar.className = 'bar h-full';
+      bar.style.background = randomColor();
+      bar.style.width = '0%';
+
+      const percent = document.createElement('div');
+      percent.className = 'w-12 text-sm text-right';
+      percent.textContent = '0%';
+
+      barWrap.appendChild(bar);
+      row.appendChild(label);
+      row.appendChild(barWrap);
+      row.appendChild(percent);
+      chart.appendChild(row);
+
+      let current = 0;
+      const target = Math.round((count / MAX) * 100);
+
+            function animate() {
+        if (current >= target) return;
+        current++;
+        bar.style.width = current + '%';
+        percent.textContent = current + '%';
+        requestAnimationFrame(animate);
+      }
+      animate();
+
+      if (imageUrl) {
+        const card = document.createElement('div');
+        card.className = 'rounded overflow-hidden border border-gray-600 bg-gray-700';
+        card.innerHTML = `
+          <img src="${imageUrl}" alt="${name}" class="w-full h-32 object-cover">
+          <div class="p-2 text-xs">
+            <div class="font-medium">${name}</div>
+            <div class="text-gray-400">${count} students</div>
+            <div class="text-gray-400">Students' names: ${students.join(', ')}</div>
+          </div>
+        `;
+        images.appendChild(card);
+      }
+    }
+  </script>
+
+</body>
+</html>
